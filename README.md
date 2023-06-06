@@ -1,6 +1,15 @@
 ## Описание
 Учебная работа по работе с react, redux, redux toolkit, typescript, ant design, axios
 
+
+## Запуск
+Для запуска сервера необходимо запустить файл backend/index.js
+
+node index.js
+
+Далее можно запускать frontend приложение
+
+
 ## Стек
 
 HTML
