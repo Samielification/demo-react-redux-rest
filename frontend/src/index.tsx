@@ -1,11 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { configureStore } from '@reduxjs/toolkit';
+import { ConfigProvider } from 'antd';
 import { Provider, TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import rootReducer from "./store/reducers/rootReducer";
-import { ConfigProvider } from 'antd';
 import 'dayjs/locale/ru';
 import ru from "antd/es/locale/ru_RU"
 
@@ -19,10 +19,10 @@ export const useAppDispatch = () => useDispatch<AppDispatch>();
 export type RootState = ReturnType<typeof store.getState>;
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
-
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
+
 root.render(
   <React.StrictMode>
     <ConfigProvider locale={ru}>

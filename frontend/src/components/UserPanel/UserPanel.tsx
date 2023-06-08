@@ -1,10 +1,18 @@
 import { Button, DatePicker, Form, Input, Modal, Row, Tooltip } from 'antd'
-import classes from './UserPanel.module.css'
-import { PlusCircleOutlined } from '@ant-design/icons'
+import { PlusCircleOutlined, ReloadOutlined } from '@ant-design/icons'
 import { useState } from 'react'
+import { fetchCreateStudent, fetchLoadStudents } from '../../store/slices/students'
+import { useAppDispatch, useAppSelector } from '../..'
+import { IFormCreateStudent } from '../../store/types/students'
+import { mapStudentFormToDto } from '../../store/utils/mappers'
+import { loadingStatusCodes } from '../../store/types/http'
+import classes from './UserPanel.module.css'
 
 
 export const UserPanel = () => {
+
+    const dispatch = useAppDispatch();
+    const { studentsLoadingStatus } = useAppSelector(state => state.student)
     
     const [openModalAdd, setOpenModalAdd] = useState<boolean>(false) 
 
@@ -12,13 +20,27 @@ export const UserPanel = () => {
         setOpenModalAdd(true)
     }
 
-    const handleCreateStudent = (values: any) => {
-        console.log('handleCreateStudent', values);
-        
+    const handleReloadStudent = () => {
+        dispatch(fetchLoadStudents())
+    }
+
+    const handleCreateStudent = (values: IFormCreateStudent) => {
+        dispatch(fetchCreateStudent(mapStudentFormToDto(values))).then(() => {
+            dispatch(fetchLoadStudents())
+            setOpenModalAdd(false)
+        })
     }
 
     return(
         <div className={classes.panel}>
+            <Tooltip title='Обновить'>
+                <Button
+                    type='ghost'
+                    icon={<ReloadOutlined style={{color:'#1677ff'}} />}
+                    onClick={handleReloadStudent}
+                    disabled={studentsLoadingStatus === loadingStatusCodes.pending}
+                />
+            </Tooltip>
             <Tooltip title='Добавить студента'>
                 <Button
                     type='ghost'
@@ -38,7 +60,6 @@ export const UserPanel = () => {
                     labelCol={{ span: 8 }}
                     wrapperCol={{ span: 16 }}
                     style={{ maxWidth: 600 }}
-                    // initialValues={}
                     onFinish={handleCreateStudent}
                     autoComplete='off'
                 >
