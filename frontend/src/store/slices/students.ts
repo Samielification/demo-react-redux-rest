@@ -25,16 +25,24 @@ const fetchLoadStudents = createAsyncThunk(
 const fetchCreateStudent = createAsyncThunk(
     'students/fetchCreateStudent',
     async (studentBody: ICreateStudent) => {
-        const { data }: { data: IStudent } = await axios.post('http://localhost:3000/api/students', studentBody)
-        return data
+        try {
+            const { data }: { data: IStudent } = await axios.post('http://localhost:3000/api/students', studentBody)
+            return data
+        } catch (error) {
+            throw new Error()
+        }
     },
 );
 
 const fetchRemovedStudent = createAsyncThunk(
     'students/fetchRemovedStudent',
     async (studentId: string) => {
-        const { data }: { data: IStudent } = await axios.delete('http://localhost:3000/api/students/' + studentId)
-        return data
+        try {
+            const { data }: { data: IStudent } = await axios.delete('http://localhost:3000/api/students/' + studentId)
+            return data
+        } catch (error) {
+            throw new Error()
+        }        
     },
 );
 

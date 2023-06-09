@@ -1,4 +1,4 @@
-import { Button, DatePicker, Form, Input, Modal, Row, Tooltip } from 'antd'
+import { Button, DatePicker, Form, Input, Modal, Row, Tooltip, message } from 'antd'
 import { PlusCircleOutlined, ReloadOutlined } from '@ant-design/icons'
 import { useState } from 'react'
 import { fetchCreateStudent, fetchLoadStudents } from '../../store/slices/students'
@@ -12,9 +12,11 @@ import classes from './UserPanel.module.css'
 export const UserPanel = () => {
 
     const dispatch = useAppDispatch();
-    const { studentsLoadingStatus } = useAppSelector(state => state.student)
+    const { studentsLoadingStatus } = useAppSelector(state => state.students)
+    const [ messageApi, contextHolder ] = message.useMessage();
+    const [ form ] = Form.useForm();
     
-    const [openModalAdd, setOpenModalAdd] = useState<boolean>(false) 
+    const [ openModalAdd, setOpenModalAdd ] = useState<boolean>(false) 
 
     const handleClickAddStudent = () => {
         setOpenModalAdd(true)
@@ -25,14 +27,27 @@ export const UserPanel = () => {
     }
 
     const handleCreateStudent = (values: IFormCreateStudent) => {
-        dispatch(fetchCreateStudent(mapStudentFormToDto(values))).then(() => {
-            dispatch(fetchLoadStudents())
-            setOpenModalAdd(false)
+        dispatch(fetchCreateStudent(mapStudentFormToDto(values))).then((res) => {
+            if (res.meta.requestStatus === loadingStatusCodes.rejected) {
+                messageApi.open({
+                    type: 'error',
+                    content: 'Ошибка при добавлении студента',
+                }); 
+            } else {
+                dispatch(fetchLoadStudents())
+                setOpenModalAdd(false)
+                form.resetFields()
+                messageApi.open({
+                    type: 'success',
+                    content: 'Студент успешно добавлен',
+                });
+            }            
         })
     }
 
     return(
         <div className={classes.panel}>
+            {contextHolder}
             <Tooltip title='Обновить'>
                 <Button
                     type='ghost'
@@ -56,6 +71,7 @@ export const UserPanel = () => {
                 footer={false}
             >
                 <Form
+                    form={form}
                     name='create'
                     labelCol={{ span: 8 }}
                     wrapperCol={{ span: 16 }}

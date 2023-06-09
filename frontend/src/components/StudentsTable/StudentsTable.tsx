@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import Table, { ColumnsType } from 'antd/es/table'
-import { Button, Modal, Row } from 'antd'
+import { Button, Modal, Row, Tooltip, message } from 'antd'
 import { DeleteOutlined } from '@ant-design/icons'
 import { useAppDispatch, useAppSelector } from '../..'
 import { IStudentTable } from '../../store/types/students'
@@ -8,11 +8,13 @@ import { mapStudentsToTable } from '../../store/utils/mappers'
 import { loadingStatusCodes } from '../../store/types/http'
 import { END_MONTH_EDUCATION, YEARS_OF_EDUCATION } from '../../store/consts/students'
 import { fetchLoadStudents, fetchRemovedStudent } from '../../store/slices/students'
+import { getCourseByYear } from '../../store/utils/helpers'
 
 export const StudentsTable = () => {
 
     const dispatch = useAppDispatch();
-    const { students, studentsLoadingStatus } = useAppSelector(state => state.student)
+    const { students, studentsLoadingStatus } = useAppSelector(state => state.students)
+    const [ messageApi, contextHolder ] = message.useMessage();
 
     const [ removedStudent, setRemovedStudent ] = useState<IStudentTable | undefined>(undefined) 
 
@@ -63,11 +65,13 @@ export const StudentsTable = () => {
             key: 'actions',
             render: (value: any, record: IStudentTable) => {
                 return(
-                    <Button
-                        type='ghost'
-                        icon={<DeleteOutlined style={{color:'red'}} />}
-                        onClick={() => setRemovedStudent(record)}
-                    />
+                    <Tooltip title='Удалить'>
+                        <Button
+                            type='ghost'
+                            icon={<DeleteOutlined style={{color:'red'}} />}
+                            onClick={() => setRemovedStudent(record)}
+                        />
+                    </Tooltip>
                 )
             }
         },
@@ -83,28 +87,38 @@ export const StudentsTable = () => {
     }
 
     const getCourseStr = (studyStart: string) => {
-        const endYear = Number(studyStart) + YEARS_OF_EDUCATION;
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = now.getMonth();
-        if (month <= END_MONTH_EDUCATION && year >= endYear) {
-            return 'закончил';
+        const course = getCourseByYear(studyStart);
+        if (!!course) {
+            return `${course} курс`;
         } else {
-            return `${year - Number(studyStart) + 1} курс`;
+            return 'закончил';
         }
     }
 
     const handleDeleteStudent = (removedStudent: IStudentTable | undefined) => {
         if (removedStudent) {
-            dispatch(fetchRemovedStudent(removedStudent.id)).then(() => {
-                dispatch(fetchLoadStudents())
-                setRemovedStudent(undefined)
+            dispatch(fetchRemovedStudent(removedStudent.id)).then((res) => {
+                if (res.meta.requestStatus === loadingStatusCodes.rejected) {
+                    setRemovedStudent(undefined)
+                    messageApi.open({
+                        type: 'error',
+                        content: 'Ошибка при удалении студента',
+                    }); 
+                } else {
+                    dispatch(fetchLoadStudents())
+                    setRemovedStudent(undefined)
+                    messageApi.open({
+                        type: 'success',
+                        content: 'Студент успешно удален',
+                    });
+                }               
             })
         }
     }
 
     return(
         <div>
+            {contextHolder}
             <Table
                 columns={columns}
                 dataSource={mapStudentsToTable(students)}

@@ -33,3 +33,9 @@ export interface ICreateStudent {
     studyStart: string,
     faculty: string,
 }
+
+export interface IStudentStatistic {
+    course: number,
+    studentsPerCourse: number,
+    percentPerCourse: number,
+}
