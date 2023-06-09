@@ -5,9 +5,9 @@ import { ConfigProvider } from 'antd';
 import { Provider, TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import rootReducer from "./store/reducers/rootReducer";
+import rootReducer from './store/reducers/rootReducer';
 import 'dayjs/locale/ru';
-import ru from "antd/es/locale/ru_RU"
+import ru from 'antd/es/locale/ru_RU'
 
 const store = configureStore({
   reducer: rootReducer,

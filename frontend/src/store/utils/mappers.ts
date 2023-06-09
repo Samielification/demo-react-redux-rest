@@ -1,4 +1,4 @@
-import { ICreateStudent, IFormCreateStudent, IStudent, IStudentTable } from "../types/students";
+import { ICreateStudent, IFormCreateStudent, IStudent, IStudentTable } from '../types/students';
 
 export const mapStudentsToTable = (students: IStudent[]): IStudentTable[] => {
     return students.map(item => {

@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import Table, { ColumnsType } from 'antd/es/table'
-import { Button, Modal, Row, Tooltip, message } from 'antd'
+import { Button, Modal, Row, Tag, Tooltip, message } from 'antd'
 import { DeleteOutlined } from '@ant-design/icons'
 import { useAppDispatch, useAppSelector } from '../..'
 import { IStudentTable } from '../../store/types/students'
 import { mapStudentsToTable } from '../../store/utils/mappers'
 import { loadingStatusCodes } from '../../store/types/http'
-import { END_MONTH_EDUCATION, YEARS_OF_EDUCATION } from '../../store/consts/students'
+import { YEARS_OF_EDUCATION } from '../../store/consts/students'
 import { fetchLoadStudents, fetchRemovedStudent } from '../../store/slices/students'
 import { getCourseByYear } from '../../store/utils/helpers'
 
@@ -22,22 +22,26 @@ export const StudentsTable = () => {
         {
             title: 'Фамилия',
             dataIndex: 'lastname',
-            key: 'lastname'
+            key: 'lastname',
+            sorter: (a, b) => a.lastname.length - b.lastname.length,
         },
         {
             title: 'Имя',
             dataIndex: 'name',
-            key: 'name'
+            key: 'name',
+            sorter: (a, b) => a.name.length - b.name.length,
         },
         {
             title: 'Отчество',
             dataIndex: 'surname',
-            key: 'surname'
+            key: 'surname',
+            sorter: (a, b) => a.surname.length - b.surname.length,
         },
         {
             title: 'Факультет',
             dataIndex: 'faculty',
-            key: 'faculty'
+            key: 'faculty',
+            sorter: (a, b) => a.faculty.length - b.faculty.length,
         },
         {
             title: 'Дата рождения и возраст',
@@ -54,8 +58,13 @@ export const StudentsTable = () => {
             dataIndex: 'studyStart',
             key: 'studyStart',
             render: (value: any, record: IStudentTable) => {
-                return(
-                    <span>{`${record.studyStart}-${Number(record.studyStart) + YEARS_OF_EDUCATION} (${getCourseStr(record.studyStart)})`}</span>
+                const course = getCourseByYear(record.studyStart);
+                const colorTag = course ? 'gold' : 'green'
+                return (
+                    <span>
+                        {`${record.studyStart}-${Number(record.studyStart) + YEARS_OF_EDUCATION}`}
+                        <Tag color={colorTag} style={{marginLeft: 5}}>{`${getCourseStr(record.studyStart)}`}</Tag>
+                    </span>
                 )
             }
         },
@@ -122,7 +131,7 @@ export const StudentsTable = () => {
             <Table
                 columns={columns}
                 dataSource={mapStudentsToTable(students)}
-                pagination={false}
+                pagination={{pageSize: 10, position: ['topCenter']}}
                 size='small'
                 loading={studentsLoadingStatus === loadingStatusCodes.pending}
             />

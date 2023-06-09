@@ -1,4 +1,4 @@
-export type ILoadingStatusCode = "pending" | "fulfilled" | "rejected" | "idle";
+export type ILoadingStatusCode = 'pending' | 'fulfilled' | 'rejected' | 'idle';
 
 interface ILoadingStatusCodes {
   pending: ILoadingStatusCode,
@@ -8,8 +8,8 @@ interface ILoadingStatusCodes {
 }
 
 export const loadingStatusCodes: ILoadingStatusCodes = {
-  pending: "pending",
-  fulfilled: "fulfilled",
-  rejected: "rejected",
-  idle: "idle",
+  pending: 'pending',
+  fulfilled: 'fulfilled',
+  rejected: 'rejected',
+  idle: 'idle',
 }

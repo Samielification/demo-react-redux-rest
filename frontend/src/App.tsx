@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
 import { message } from 'antd';
 import { useAppDispatch, useAppSelector } from './store';
-import { fetchLoadStudents } from './store/slices/students';
+import { fetchConfig, fetchLoadStudents } from './store/slices/students';
 import { StudentsTable } from './components/StudentsTable/StudentsTable';
 import { UserPanel } from './components/UserPanel/UserPanel';
-import './App.css';
 import { loadingStatusCodes } from './store/types/http';
 import { StudentsStatistics } from './components/StudentsStatistics/StudentsStatistics';
+import './App.css';
 
 function App() {
 
@@ -15,7 +15,9 @@ function App() {
   const [ messageApi, contextHolder ] = message.useMessage();
 
   useEffect(() => {
-    dispatch(fetchLoadStudents())
+    dispatch(fetchConfig()).then(() => {
+      dispatch(fetchLoadStudents())
+    })    
   }, [])
 
   useEffect(() => {
@@ -28,7 +30,7 @@ function App() {
   }, [studentsLoadingStatus])
 
   return (
-    <div className="App">
+    <div className='App'>
       {contextHolder}
       <StudentsStatistics />
       <UserPanel />

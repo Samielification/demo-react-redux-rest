@@ -1,4 +1,8 @@
-import { Dayjs } from "dayjs";
+import { Dayjs } from 'dayjs';
+
+export interface IStudentConfig {
+    BASE_URL_STUDENTS: string,
+}
 
 export interface IStudent {
     name: string,

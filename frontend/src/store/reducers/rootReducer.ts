@@ -1,5 +1,5 @@
-import { combineReducers } from "@reduxjs/toolkit";
-import { reducer as studentReducer } from "../slices/students";
+import { combineReducers } from '@reduxjs/toolkit';
+import { reducer as studentReducer } from '../slices/students';
 
 export default combineReducers({
     students: studentReducer
